@@ -1,0 +1,76 @@
+%YAML 1.2
+---
+# See http://www.sublimetext.com/docs/3/syntax.html
+name: JovialJ73
+file_extensions:
+  - jov
+  - j73
+  - JOV
+  - J73
+scope: source.jov
+
+contexts:
+  # The prototype context is prepended to all contexts but those setting
+  # meta_include_prototype: false.
+  prototype:
+    - include: comments
+
+  main:
+    # The main context is the initial starting point of our syntax.
+    # Include other contexts from here (or specify them directly).
+    - include: keywords
+    - include: numbers
+    - include: strings
+    - include: types
+    - include: constants
+
+  keywords:
+    # Keywords are if, else for and while.
+    # Note that blackslashes don't need to be escaped within single quoted
+    # strings in YAML. When using single quoted strings, only single quotes
+    # need to be escaped: this is done by using two single quotes next to each
+    # other.
+    - match: '\b(ABORT|BEGIN|BY|BYREF|BYRES|BYVAL|CASE|COMPOOL|DEF|DEFAULT|DEFINE|ELSE|END|EXIT|FALLTHRU|FOR|GOTO|IF|INLINE|INSTANCE|LABEL|LIKE|OVERLAY|POS|PROC|PROGRAM|REC|REF|RENT|REP|RETURN|START|STOP|TERM|THEN|WHILE)\b'
+      scope: keyword.control.jov
+
+  numbers:
+    - match: '\b(-)?[0-9.]+\b'
+      scope: constant.numeric.jov
+
+  constants:
+    - match: '\b(NULL|FALSE|TRUE)\b'
+      scope: constant.language.jov
+
+  types:
+    - match: '\b(ITEM|B|C|P|V|TABLE|STATUS|STATIC|CONSTANT|PARALLEL|BLOCK|N|M|D|W)\b'
+      scope: storage.type.jov
+
+  logicals:
+    - match: '\b(AND|OR|NOT|XOR|EQV|MOD)\b'
+      scope: keyword.operator.jov
+
+  strings:
+    # Strings begin and end with quotes, and use backslashes as an escape
+    # character.
+    - match: '"'
+      scope: punctuation.definition.string.begin.jov
+      push: inside_string
+
+  inside_string:
+    - meta_include_prototype: false
+    - meta_scope: string.quoted.double.jov
+    - match: '\.'
+      scope: constant.character.escape.jov
+    - match: '"'
+      scope: punctuation.definition.string.end.jov
+      pop: true
+
+  comments:
+    # Comments begin with a '//' and finish at the end of the line.
+    - match: '%'
+      scope: punctuation.definition.comment.jov
+      push:
+        # This is an anonymous context push for brevity.
+        - meta_scope: comment.line.double-slash.jov
+        - match: '%'
+          pop: true
